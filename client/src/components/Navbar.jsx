@@ -14,6 +14,7 @@ function Navbar() {
 
   const showSidebar = () => setSidebar(!sidebar);
 
+  //logout
   const handleLogout = (evt) => {
     logout(() => {
       navigate("/");

@@ -6,14 +6,25 @@ import { useNavigate } from "react-router-dom";
 import { getUser } from "../api/auth";
 import * as AiIcons from "react-icons/ai";
 import Pagination from "../components/Pagination";
+import { showErrorMsg, showSuccessMsg } from "../helpers/message";
+import ViewUser from "./ViewUser";
+import { Table } from "react-bootstrap";
 
 const AdminDashboard = () => {
+  //navigate
   const navigate = useNavigate();
+  //store user data
   const [users, setUsers] = useState([]);
+  //pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(10);
+  //search
   const [query, setQuery] = useState("");
+  // error || success msg
+  const [errorMsg, setErrorMsg] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
 
+  // redirection
   useEffect(() => {
     if (isAuthenticated() && isAuthenticated().accountType === 1) {
       navigate("/admin/dashboard");
@@ -24,6 +35,7 @@ const AdminDashboard = () => {
     }
   }, [navigate]);
 
+  //fetch users
   getUser().then((response) => {
     setUsers(response.data);
   });
@@ -50,13 +62,15 @@ const AdminDashboard = () => {
     <div>
       <Navbar />
       <div className="content-container">
-        <div>
+        <div className="w-container">
           <div className="container">
             <div className="table-responsive">
+              {errorMsg && showErrorMsg(errorMsg)}
+              {successMsg && showSuccessMsg(successMsg)}
               <div className="table-wrapper">
                 <div className="table-title">
                   <div className="row">
-                    <div className="col-md-6">
+                    <div className="col-md-6 mob-responsive-title">
                       <h2>
                         Manage <b>Users</b>
                       </h2>
@@ -64,7 +78,7 @@ const AdminDashboard = () => {
                     <div className="col-md-6">
                       <a
                         href="/admin/create"
-                        className="btn btn-success d-flex align-items-center"
+                        className="btn btn-success d-flex align-items-center justify-content-center mob-responsive-btn"
                         data-toggle="modal"
                       >
                         <i className="material-icons">
@@ -83,7 +97,7 @@ const AdminDashboard = () => {
                     onChange={(e) => setQuery(e.target.value)}
                   />
                 </div>
-                <table className="table table-striped table-hover">
+                <Table responsive className="table table-striped table-hover">
                   <thead>
                     <tr>
                       <th>
@@ -104,60 +118,16 @@ const AdminDashboard = () => {
                   </thead>
                   <tbody>
                     {search(currentUsers).map((user) => (
-                      <tr>
-                        <td>
-                          <span className="custom-checkbox">
-                            <input
-                              type="checkbox"
-                              id="checkbox1"
-                              name="options[]"
-                              defaultValue={1}
-                            />
-                            <label htmlFor="checkbox1" />
-                          </span>
-                        </td>
-                        <td>{user.firstName}</td>
-                        <td>{user.lastName}</td>
-                        <td>{user.email}</td>
-                        <td>{user.dateOfBirth}</td>
-                        <td>{user.mobile}</td>
-                        <td>{user.status}</td>
-                        {user.accountType === 0 ? (
-                          <td>User</td>
-                        ) : (
-                          <td>Admin</td>
-                        )}
-                        <td>
-                          <a
-                            href="#editEmployeeModal"
-                            className="edit"
-                            data-toggle="modal"
-                          >
-                            <i
-                              className="material-icons"
-                              data-toggle="tooltip"
-                              title="Edit"
-                            >
-                              <AiIcons.AiTwotoneEdit />
-                            </i>
-                          </a>
-                          <a href="/delete-user/${user.id}" className="delete">
-                            <i
-                              className="material-icons"
-                              data-toggle="tooltip"
-                              title="Delete"
-                            >
-                              <AiIcons.AiTwotoneDelete />
-                            </i>
-                          </a>
-                        </td>
+                      <tr key={user._id}>
+                        <ViewUser user={user} />
                       </tr>
                     ))}
                   </tbody>
-                </table>
+                </Table>
                 <div className="clearfix">
                   <div className="hint-text">
-                    Showing <b>5</b> out of <b>25</b> entries
+                    Showing <b>{currentPage}</b> out of <b>{users.length}</b>{" "}
+                    entries
                   </div>
                   <Pagination
                     itemsPerPage={usersPerPage}
@@ -165,61 +135,6 @@ const AdminDashboard = () => {
                     paginate={paginate}
                   />
                 </div>
-              </div>
-            </div>
-          </div>
-          {/* Edit Modal HTML */}
-          <div id="editEmployeeModal" className="modal fade">
-            <div className="modal-dialog">
-              <div className="modal-content">
-                <form>
-                  <div className="modal-header">
-                    <h4 className="modal-title">Edit Employee</h4>
-                    <button
-                      type="button"
-                      className="close"
-                      data-dismiss="modal"
-                      aria-hidden="true"
-                    >
-                      ×
-                    </button>
-                  </div>
-                  <div className="modal-body">
-                    <div className="form-group">
-                      <label>Name</label>
-                      <input type="text" className="form-control" required />
-                    </div>
-                    <div className="form-group">
-                      <label>Email</label>
-                      <input type="email" className="form-control" required />
-                    </div>
-                    <div className="form-group">
-                      <label>Address</label>
-                      <textarea
-                        className="form-control"
-                        required
-                        defaultValue={""}
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label>Phone</label>
-                      <input type="text" className="form-control" required />
-                    </div>
-                  </div>
-                  <div className="modal-footer">
-                    <input
-                      type="button"
-                      className="btn btn-default"
-                      data-dismiss="modal"
-                      defaultValue="Cancel"
-                    />
-                    <input
-                      type="submit"
-                      className="btn btn-info"
-                      defaultValue="Save"
-                    />
-                  </div>
-                </form>
               </div>
             </div>
           </div>

@@ -11,8 +11,10 @@ import { getCookie } from "../helpers/cookies";
 import emailjs from "@emailjs/browser";
 
 const UserCreate = () => {
+  //navigate
   const navigate = useNavigate();
 
+  //redirection
   useEffect(() => {
     if (isAuthenticated() && isAuthenticated().accountType === 1) {
       navigate("/admin/create");
@@ -62,6 +64,7 @@ const UserCreate = () => {
   const token = getCookie("token");
   // console.log(token);
 
+  //submit the form
   const handleSubmit = (evt) => {
     evt.preventDefault();
     if (
@@ -93,15 +96,16 @@ const UserCreate = () => {
 
       setFormData({ ...formData, loading: true });
 
+      //send data to backend
       createUser(data)
         .then((response) => {
           //send email
           var templateParams = {
-            from_name: "Company name",
+            from_name: "login credential",
             to_name: firstName,
             message: `Your account has been successfully created and the password is ${password} and the login link is http://localhost:3000/profileEdit`,
             to_email: email,
-            from_email: "companyname@gmail.com",
+            from_email: "surge.test@gmail.com",
           };
 
           emailjs
@@ -148,7 +152,7 @@ const UserCreate = () => {
     <div>
       <Navbar />
       <div className="content-container">
-        <div>
+        <div className="w-container">
           <div className="Auth-form-container">
             {loading && (
               <div className="text-center pb-4 position-absolute">
@@ -166,7 +170,7 @@ const UserCreate = () => {
                     <input
                       type="text"
                       className="form-control mt-1"
-                      placeholder="Enter first name"
+                      placeholder="Enter First name"
                       value={firstName}
                       name="firstName"
                       onChange={handleChange}
@@ -190,7 +194,7 @@ const UserCreate = () => {
                     <input
                       type="email"
                       className="form-control mt-1"
-                      placeholder="Enter email"
+                      placeholder="Enter Email"
                       value={email}
                       name="email"
                       onChange={handleChange}
@@ -225,7 +229,7 @@ const UserCreate = () => {
                     <input
                       type="text"
                       className="form-control mt-1"
-                      placeholder="Enter Date Of Birth"
+                      placeholder="Enter Status"
                       value={status}
                       name="status"
                       onChange={handleChange}
@@ -241,7 +245,7 @@ const UserCreate = () => {
                       name="accountType"
                       onChange={handleChange}
                     >
-                      <option>Select account type</option>
+                      <option>Select Account type</option>
                       <option value={0}>User</option>
                       <option value={1}>Admin</option>
                     </select>

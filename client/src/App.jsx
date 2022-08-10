@@ -13,6 +13,11 @@ import UserCreate from "./admin/UserCreate";
 import Notes from "./user/Notes";
 import "./App.css";
 import EditProfile from "./components/EditProfile";
+import EditNote from "./user/EditNote";
+// import "@fortawesome/fontawesome-free/css/all.min.css";
+// import "bootstrap-css-only/css/bootstrap.min.css";
+// import "mdbreact/dist/css/mdb.css";
+
 const App = () => {
   return (
     <Router>
@@ -23,6 +28,7 @@ const App = () => {
         <Route exact path="/user/dashboard" element={<UserDashboard />} />
         <Route exact path="/user/notes" element={<Notes />} />
         <Route exact path="/profileEdit" element={<EditProfile />} />
+        <Route exact path="/Updatenotes/:id" element={<EditNote />} />
       </Routes>
     </Router>
   );

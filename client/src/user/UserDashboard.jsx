@@ -6,6 +6,9 @@ import { useNavigate } from "react-router-dom";
 import * as AiIcons from "react-icons/ai";
 import { getNote } from "../api/note";
 import Pagination from "../components/Pagination";
+import axios from "axios";
+import { showErrorMsg, showSuccessMsg } from "../helpers/message";
+import { Table } from "react-bootstrap";
 
 const UserDashboard = () => {
   const navigate = useNavigate();
@@ -13,6 +16,8 @@ const UserDashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(10);
   const [query, setQuery] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
 
   useEffect(() => {
     if (isAuthenticated() && isAuthenticated().accountType === 1) {
@@ -45,31 +50,44 @@ const UserDashboard = () => {
     );
   };
 
+  const deleteRow = (id) => {
+    axios
+      .delete(`http://localhost:5000/api/note/${id}`)
+      .then((response) => {
+        setSuccessMsg(response.data.successMessage);
+      })
+      .catch((err) => {
+        setErrorMsg(err.response.data.errorMessage);
+      });
+  };
+
   return (
     <div>
       <Navbar />
       <div className="content-container">
-        <div>
+        <div className="w-container">
           <div className="container">
             <div className="table-responsive">
+              {errorMsg && showErrorMsg(errorMsg)}
+              {successMsg && showSuccessMsg(successMsg)}
               <div className="table-wrapper">
                 <div className="table-title">
                   <div className="row">
-                    <div className="col-md-6">
+                    <div className="col-md-6 mob-responsive-title">
                       <h2>
-                        Manage <b>Employees</b>
+                        Manage <b>Notes</b>
                       </h2>
                     </div>
                     <div className="col-md-6">
                       <a
                         href="/user/notes"
-                        className="btn btn-success d-flex align-items-center"
+                        className="btn btn-success d-flex align-items-center justify-content-center mob-responsive-btn"
                         data-toggle="modal"
                       >
                         <i className="material-icons">
                           <AiIcons.AiFillPlusCircle />
                         </i>
-                        <span>Add New Employee</span>
+                        <span>Add New Note</span>
                       </a>
                     </div>
                   </div>
@@ -82,7 +100,7 @@ const UserDashboard = () => {
                     onChange={(e) => setQuery(e.target.value)}
                   />
                 </div>
-                <table className="table table-striped table-hover">
+                <Table responsive className="table table-striped table-hover">
                   <thead>
                     <tr>
                       <th>
@@ -106,6 +124,7 @@ const UserDashboard = () => {
                               id="checkbox1"
                               name="options[]"
                               defaultValue={1}
+                              value={note._id}
                             />
                             <label htmlFor="checkbox1" />
                           </span>
@@ -114,7 +133,7 @@ const UserDashboard = () => {
                         <td>{note.description}</td>
                         <td>
                           <a
-                            href="#editEmployeeModal"
+                            href={"/Updatenotes/" + note._id}
                             className="edit"
                             data-toggle="modal"
                           >
@@ -126,27 +145,28 @@ const UserDashboard = () => {
                               <AiIcons.AiTwotoneEdit />
                             </i>
                           </a>
-                          <a
-                            href="#deleteEmployeeModal"
-                            className="delete"
+                          <button
+                            className="delete outline-none border-0 bg-transparent"
                             data-toggle="modal"
+                            onClick={(e) => deleteRow(note._id)}
                           >
                             <i
-                              className="material-icons"
+                              className="material-icons text-danger"
                               data-toggle="tooltip"
                               title="Delete"
                             >
                               <AiIcons.AiTwotoneDelete />
                             </i>
-                          </a>
+                          </button>
                         </td>
                       </tr>
                     ))}
                   </tbody>
-                </table>
+                </Table>
                 <div className="clearfix">
                   <div className="hint-text">
-                    Showing <b>5</b> out of <b>25</b> entries
+                    Showing <b>{currentPage}</b> out of <b>{notes.length}</b>{" "}
+                    entries
                   </div>
                   <Pagination
                     itemsPerPage={usersPerPage}
@@ -154,155 +174,6 @@ const UserDashboard = () => {
                     paginate={paginate}
                   />
                 </div>
-              </div>
-            </div>
-          </div>
-          {/* Edit Modal HTML */}
-          <div id="addEmployeeModal" className="modal fade">
-            <div className="modal-dialog">
-              <div className="modal-content">
-                <form>
-                  <div className="modal-header">
-                    <h4 className="modal-title">Add Employee</h4>
-                    <button
-                      type="button"
-                      className="close"
-                      data-dismiss="modal"
-                      aria-hidden="true"
-                    >
-                      ×
-                    </button>
-                  </div>
-                  <div className="modal-body">
-                    <div className="form-group">
-                      <label>Name</label>
-                      <input type="text" className="form-control" required />
-                    </div>
-                    <div className="form-group">
-                      <label>Email</label>
-                      <input type="email" className="form-control" required />
-                    </div>
-                    <div className="form-group">
-                      <label>Address</label>
-                      <textarea
-                        className="form-control"
-                        required
-                        defaultValue={""}
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label>Phone</label>
-                      <input type="text" className="form-control" required />
-                    </div>
-                  </div>
-                  <div className="modal-footer">
-                    <input
-                      type="button"
-                      className="btn btn-default"
-                      data-dismiss="modal"
-                      defaultValue="Cancel"
-                    />
-                    <input
-                      type="submit"
-                      className="btn btn-success"
-                      defaultValue="Add"
-                    />
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-          {/* Edit Modal HTML */}
-          <div id="editEmployeeModal" className="modal fade">
-            <div className="modal-dialog">
-              <div className="modal-content">
-                <form>
-                  <div className="modal-header">
-                    <h4 className="modal-title">Edit Employee</h4>
-                    <button
-                      type="button"
-                      className="close"
-                      data-dismiss="modal"
-                      aria-hidden="true"
-                    >
-                      ×
-                    </button>
-                  </div>
-                  <div className="modal-body">
-                    <div className="form-group">
-                      <label>Name</label>
-                      <input type="text" className="form-control" required />
-                    </div>
-                    <div className="form-group">
-                      <label>Email</label>
-                      <input type="email" className="form-control" required />
-                    </div>
-                    <div className="form-group">
-                      <label>Address</label>
-                      <textarea
-                        className="form-control"
-                        required
-                        defaultValue={""}
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label>Phone</label>
-                      <input type="text" className="form-control" required />
-                    </div>
-                  </div>
-                  <div className="modal-footer">
-                    <input
-                      type="button"
-                      className="btn btn-default"
-                      data-dismiss="modal"
-                      defaultValue="Cancel"
-                    />
-                    <input
-                      type="submit"
-                      className="btn btn-info"
-                      defaultValue="Save"
-                    />
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-          {/* Delete Modal HTML */}
-          <div id="deleteEmployeeModal" className="modal fade">
-            <div className="modal-dialog">
-              <div className="modal-content">
-                <form>
-                  <div className="modal-header">
-                    <h4 className="modal-title">Delete Employee</h4>
-                    <button
-                      type="button"
-                      className="close"
-                      data-dismiss="modal"
-                      aria-hidden="true"
-                    >
-                      ×
-                    </button>
-                  </div>
-                  <div className="modal-body">
-                    <p>Are you sure you want to delete these Records?</p>
-                    <p className="text-warning">
-                      <small>This action cannot be undone.</small>
-                    </p>
-                  </div>
-                  <div className="modal-footer">
-                    <input
-                      type="button"
-                      className="btn btn-default"
-                      data-dismiss="modal"
-                      defaultValue="Cancel"
-                    />
-                    <input
-                      type="submit"
-                      className="btn btn-danger"
-                      defaultValue="Delete"
-                    />
-                  </div>
-                </form>
               </div>
             </div>
           </div>

@@ -46,15 +46,15 @@ export const getUserById = async (user_id) => {
   return response;
 };
 
-export const updateProfile = async (formData) => {
+export const updateProfile = async (user_id, formData) => {
   const config = {
     headers: {
       "Content-Type": "application/json",
     },
   };
 
-  const response = await axios.post(
-    "http://localhost:5000/api/auth/updateprofile",
+  const response = await axios.put(
+    "http://localhost:5000/api/auth/" + user_id,
     formData,
     config
   );

@@ -51,10 +51,10 @@ exports.create = async (req, res) => {
 };
 
 exports.update = async (req, res) => {
-  if (req.body.password) {
-    const salt = await bcrypt.genSalt(10);
-    req.body.password = await bcrypt.hash(password, salt);
-  }
+  const user = new User(req.body);
+
+  const salt = await bcrypt.genSalt(10);
+  user.password = await bcrypt.hash(user.password, salt);
 
   try {
     const updatedUser = await User.findByIdAndUpdate(
@@ -64,9 +64,11 @@ exports.update = async (req, res) => {
       },
       { new: true }
     );
-    res.status(200).json(updatedUser);
+    res
+      .status(200)
+      .json({ updatedUser, successMessage: "Updated user successfully!" });
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).json({ errorMessage: "Updated user unsuccessfully!" });
   }
 };
 
@@ -82,8 +84,9 @@ exports.loginController = async (req, res) => {
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
+    // console.log(isMatch)
 
-    if (isMatch) {
+    if (!isMatch) {
       return res
         .status(400)
         .json({ errorMessage: "Invalid email or password!" });
@@ -115,7 +118,7 @@ exports.getUsers = async (req, res) => {
     const users = await User.find();
     res.status(200).json(users);
   } catch (err) {
-    console.log("loginController error", err);
+    console.log("getUsers error", err);
     res.status(500).json({ errorMessage: "Server error" });
   }
 };
@@ -125,7 +128,17 @@ exports.getuserById = async (req, res) => {
     const user = await User.findById(req.params.id);
     res.status(200).json(user);
   } catch (err) {
-    console.log("loginController error", err);
+    console.log("getuserById error", err);
+    res.status(500).json({ errorMessage: "Server error" });
+  }
+};
+
+exports.deleteById = async (req, res) => {
+  try {
+    await User.findByIdAndDelete(req.params.id);
+    res.status(200).json({ successMessage: "User has been deleted..." });
+  } catch (err) {
+    console.log("deleteById error", err);
     res.status(500).json({ errorMessage: "Server error" });
   }
 };

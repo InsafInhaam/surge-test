@@ -1,8 +1,9 @@
+const { request } = require("express");
 const jwt = require("jsonwebtoken");
 const { jwtSecret } = require("../config/dev");
 
-exports.authenticatateJWT = (req, res, next) => {
-  const token = req.body.token;
+exports.authenticatateJWT = (request, req, res, next) => {
+  const token = request.headers?.cookie;
 
   // console.log(token);
 

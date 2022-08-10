@@ -26,3 +26,25 @@ export const getNote = async () => {
 
   return response;
 };
+
+export const getNoteById = async (note_id) => {
+  const response = await axios.get("http://localhost:5000/api/note/" + note_id);
+
+  return response;
+};
+
+export const updateNote = async (note_id, formData) => {
+  const config = {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+
+  const response = await axios.put(
+    "http://localhost:5000/api/note/" + note_id,
+    formData,
+    config
+  );
+
+  return response;
+};

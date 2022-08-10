@@ -3,15 +3,12 @@ import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { isAuthenticated } from "../helpers/auth";
-import isEmpty from "validator/lib/isEmpty";
 import { showErrorMsg, showSuccessMsg } from "../helpers/message";
 import showLoading from "../helpers/loading";
 import { updateProfile, getUserById } from "../api/auth";
-import { getCookie } from "../helpers/cookies";
 
 const EditProfile = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState([]);
 
   useEffect(() => {
     if (isAuthenticated()) {
@@ -21,153 +18,118 @@ const EditProfile = () => {
     }
   }, [navigate]);
 
-  // const [formData, setFormData] = useState({
-  //   firstName: "",
-  //   lastName: "",
-  //   email: "",
-  //   dateOfBirth: "",
-  //   mobile: "",
-  //   status: "",
-  //   accountType: "",
-  //   password: "",
-  //   errorMsg: false,
-  //   successMsg: false,
-  //   loading: false,
-  // });
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    dateOfBirth: "",
+    mobile: "",
+    status: "",
+    accountType: "",
+    password: "",
+    errorMsg: false,
+    successMsg: false,
+    loading: false,
+  });
 
-  //   const {
-  //     firstName,
-  //     lastName,
-  //     email,
-  //     dateOfBirth,
-  //     mobile,
-  //     status,
-  //     accountType,
-  //     password,
-  //     errorMsg,
-  //     successMsg,
-  //     loading,
-  //   } = formData;
+  const {
+    firstName,
+    lastName,
+    email,
+    dateOfBirth,
+    mobile,
+    status,
+    accountType,
+    password,
+    errorMsg,
+    successMsg,
+    loading,
+  } = formData;
 
-  //   const handleChange = (evt) => {
-  //     // setFormData({
-  //     //   ...formData,
-  //     //   [evt.target.name]: evt.target.value,
-  //     //   errorMsg: "",
-  //     // });
-
-  //     setUser(evt.target.value);
-  //   };
+  const handleChange = (evt) => {
+    setFormData({
+      ...formData,
+      [evt.target.name]: evt.target.value,
+      errorMsg: "",
+    });
+  };
 
   const user_id = isAuthenticated()._id;
   //   console.log(user_id);
 
-  //   getUserById(user_id).then((response) => {
-  //     // loading = true;
-  //     // setFormData(response.data);
-  //     formData.firstName = response.data.firstName;
-  //     formData.lastName = response.data.lastName;
-  //     formData.email = response.data.email;
-  //     formData.mobile = response.data.mobile;
-  //     //formData.dateOfBirth = response.data.dateOfBirth;
-  //     formData.status = response.data.status;
-  //     formData.accountType = response.data.accountType;
-  //   });
-
-  //   const token = getCookie("token");
-  // console.log(token);
-
-  //   const handleSubmit = (evt) => {
-  //     evt.preventDefault();
-  //     if (
-  //       isEmpty(firstName) ||
-  //       isEmpty(lastName) ||
-  //       isEmpty(email) ||
-  //       isEmpty(dateOfBirth) ||
-  //       isEmpty(mobile) ||
-  //       isEmpty(status) ||
-  //       isEmpty(accountType) ||
-  //       isEmpty(password)
-  //     ) {
-  //       setFormData({
-  //         ...formData,
-  //         errorMsg: "All fields are required",
-  //       });
-  //     } else {
-  //       const data = {
-  //         firstName,
-  //         lastName,
-  //         email,
-  //         dateOfBirth,
-  //         mobile,
-  //         status,
-  //         accountType,
-  //         password,
-  //         token,
-  //       };
-
-  //       setFormData({ ...formData, loading: true });
-
-  //       updateProfile(data)
-  //         .then((response) => {
-  //           setFormData({
-  //             ...formData,
-  //             firstName: "",
-  //             lastName: "",
-  //             email: "",
-  //             dateOfBirth: "",
-  //             mobile: "",
-  //             status: "",
-  //             accountType: "",
-  //             password: "",
-  //             loading: false,
-  //             successMsg: response.data.successMessage,
-  //           });
-  //         })
-  //         .catch((err) => {
-  //           setFormData({
-  //             ...formData,
-  //             loading: false,
-  //             errorMsg: err.response.data.errorMessage,
-  //           });
-  //         });
-  //     }
-  //   };
-
-  // useEffect(() => {
-  //   // your api data
-  //   setConsumer(data);
-  // }, []);
-
-  const handleChange = (event) => {
-    // here set change value
-    setUser(event.target.value);
-  };
-
   useEffect(() => {
     // your api data
     getUserById(user_id).then((response) => {
-      setUser(response.data);
+      setFormData(response.data);
     });
   }, []);
+
+  const handleSubmit = (evt) => {
+    evt.preventDefault();
+    if (
+      firstName === "" ||
+      lastName === "" ||
+      email === "" ||
+      dateOfBirth === "" ||
+      mobile === "" ||
+      status === "" ||
+      accountType === "" ||
+      password === ""
+    ) {
+      setFormData({
+        ...formData,
+        errorMsg: "All fields are required",
+      });
+    } else {
+      const data = {
+        firstName,
+        lastName,
+        email,
+        dateOfBirth,
+        mobile,
+        status,
+        accountType,
+        password,
+      };
+
+      setFormData({ ...formData, loading: true });
+
+      updateProfile(user_id, data)
+        .then((response) => {
+          setFormData({
+            ...formData,
+
+            loading: false,
+            successMsg: response.data.successMessage,
+          });
+        })
+        .catch((err) => {
+          setFormData({
+            ...formData,
+            loading: false,
+            errorMsg: err.response.data.errorMessage,
+          });
+        });
+    }
+  };
 
   return (
     <div>
       <Navbar />
       <div className="content-container">
-        <div>
+        <div className="w-container">
           <div className="Auth-form-container">
-            {/* {loading && (
+            {loading && (
               <div className="text-center pb-4 position-absolute">
                 {showLoading()}
               </div>
-            )} */}
+            )}
 
-            <form className="Auth-form" /*onSubmit={handleSubmit}*/>
+            <form className="Auth-form" onSubmit={handleSubmit}>
               <div className="Auth-form-content">
                 <h3 className="Auth-form-title">Update Profile</h3>
-                {/* {errorMsg && showErrorMsg(errorMsg)}
-                {successMsg && showSuccessMsg(successMsg)} */}
+                {errorMsg && showErrorMsg(errorMsg)}
+                {successMsg && showSuccessMsg(successMsg)}
                 <div className="row">
                   <div className="form-group col-md-6 mt-3">
                     <label>First Name</label>
@@ -175,7 +137,7 @@ const EditProfile = () => {
                       type="text"
                       className="form-control mt-1"
                       placeholder="Enter first name"
-                      value={user.firstName}
+                      value={firstName}
                       name="firstName"
                       onChange={handleChange}
                     />
@@ -186,7 +148,7 @@ const EditProfile = () => {
                       type="text"
                       className="form-control mt-1"
                       placeholder="Enter Last Name"
-                      value={user.lastName}
+                      value={lastName}
                       name="lastName"
                       onChange={handleChange}
                     />
@@ -199,10 +161,9 @@ const EditProfile = () => {
                       type="email"
                       className="form-control mt-1"
                       placeholder="Enter email"
-                      value={user.email}
+                      value={email}
                       name="email"
                       onChange={handleChange}
-                      disabled
                     />
                   </div>
                   <div className="form-group col-md-6 mt-3">
@@ -211,7 +172,7 @@ const EditProfile = () => {
                       type="date"
                       className="form-control mt-1"
                       placeholder="Enter Date Of Birth"
-                      value={user.dateOfBirth}
+                      value={dateOfBirth}
                       name="dateOfBirth"
                       onChange={handleChange}
                     />
@@ -224,7 +185,7 @@ const EditProfile = () => {
                       type="number"
                       className="form-control mt-1"
                       placeholder="Enter Mobile"
-                      value={user.mobile}
+                      value={mobile}
                       name="mobile"
                       onChange={handleChange}
                     />
@@ -235,7 +196,7 @@ const EditProfile = () => {
                       type="text"
                       className="form-control mt-1"
                       placeholder="Enter Date Of Birth"
-                      value={user.status}
+                      value={status}
                       name="status"
                       onChange={handleChange}
                     />
@@ -246,7 +207,7 @@ const EditProfile = () => {
                     <label>Account Type</label>
                     <select
                       className="form-control mt-1"
-                      value={user.accountType}
+                      value={accountType}
                       name="accountType"
                       onChange={handleChange}
                     >
@@ -262,14 +223,14 @@ const EditProfile = () => {
                       className="form-control mt-1"
                       placeholder="Enter password"
                       name="password"
-                      value={user.password}
+                      value={password}
                       onChange={handleChange}
                     />
                   </div>
                 </div>
                 <div className="d-grid gap-2 mt-3">
                   <button type="submit" className="btn btn-primary">
-                    Submit
+                    Update Profile
                   </button>
                 </div>
               </div>

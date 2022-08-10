@@ -21,9 +21,40 @@ exports.getNoteByUser = async (req, res) => {
   }
 };
 
-// console.log(req.user);
-// setTimeout(() => {
-//   res.json({
-//     successMessage: `${req.body.title} was successfully created`,
-//   });
-// }, 5000);
+exports.getNoteById = async (req, res) => {
+  try {
+    const note = await Note.findById(req.params.id);
+    res.status(200).json(note);
+  } catch (err) {
+    console.log("getNoteById error", err);
+    res.status(500).json({ errorMessage: "Server error" });
+  }
+};
+
+exports.update = async (req, res) => {
+  try {
+    const updatedNote = await Note.findByIdAndUpdate(
+      req.params.id,
+      {
+        $set: req.body,
+      },
+      { new: true }
+    );
+    res
+      .status(200)
+      .json({ updatedNote, successMessage: "Updated note successfully!" });
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+exports.deleteNote = async (req, res) => {
+  try {
+    await Note.findByIdAndDelete(req.params.id);
+    res.status(200).json({
+      successMessage: "note has been deleted...",
+    });
+  } catch (err) {
+    res.status(500).json({ errorMessage: "Note not been deleted" });
+  }
+};

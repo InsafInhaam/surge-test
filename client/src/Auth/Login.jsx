@@ -10,8 +10,9 @@ import { login } from "../api/auth";
 import { useEffect } from "react";
 
 const Login = () => {
+  //navigate
   const navigate = useNavigate();
-
+  //redirection
   useEffect(() => {
     if (isAuthenticated() && isAuthenticated().accountType === 1) {
       navigate("/admin/dashboard");
@@ -22,6 +23,7 @@ const Login = () => {
     }
   }, [navigate]);
 
+  //formdata
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -39,6 +41,7 @@ const Login = () => {
     });
   };
 
+  //submit the form
   const handleSubmit = (evt) => {
     evt.preventDefault();
 
@@ -63,6 +66,7 @@ const Login = () => {
         .then((response) => {
           setAuthentication(response.data.token, response.data.user);
 
+          //redirect
           if (isAuthenticated() && isAuthenticated().accountType === 1) {
             // console.log("redirect to admin page");
             navigate("/admin/dashboard");

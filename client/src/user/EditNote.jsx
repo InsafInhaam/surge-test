@@ -1,22 +1,21 @@
 import React, { useState } from "react";
 import Navbar from "../components/Navbar";
-import { useNavigate } from "react-router-dom";
 import { isAuthenticated } from "../helpers/auth";
 import { useEffect } from "react";
-import isEmpty from "validator/lib/isEmpty";
+import { useNavigate } from "react-router-dom";
+import { getNoteById, updateNote } from "../api/note";
 import { showErrorMsg, showSuccessMsg } from "../helpers/message";
+import { useLocation } from "react-router-dom";
+import isEmpty from "validator/lib/isEmpty";
 import showLoading from "../helpers/loading";
-import { createNote } from "../api/note";
 
-const Notes = () => {
+const EditNote = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
     if (isAuthenticated() && isAuthenticated().accountType === 1) {
       navigate("/admin/dashboard");
-    } else if (isAuthenticated() && isAuthenticated().accountType === 0) {
-      navigate("/user/notes");
-    } else {
+    } else if (!isAuthenticated()) {
       navigate("/");
     }
   }, [navigate]);
@@ -39,7 +38,15 @@ const Notes = () => {
     });
   };
 
-  const user_id = isAuthenticated()._id;
+  const location = useLocation();
+  const note_id = location.pathname.split("/")[2];
+
+  useEffect(() => {
+    // your api data
+    getNoteById(note_id).then((response) => {
+      setFormData(response.data);
+    });
+  }, []);
 
   const handleNoteSubmit = (evt) => {
     evt.preventDefault();
@@ -49,14 +56,12 @@ const Notes = () => {
         errorMsg: "All fields are required",
       });
     } else {
-      const data = { title, description, user_id };
+      const data = { title, description };
       setFormData({ ...formData, loading: true });
-      createNote(data)
+      updateNote(note_id, data)
         .then((response) => {
           setFormData({
             ...formData,
-            title: "",
-            description: "",
             loading: false,
             successMsg: response.data.successMessage,
           });
@@ -113,7 +118,7 @@ const Notes = () => {
 
                 <div className="d-grid gap-2 mt-3">
                   <button type="submit" className="btn btn-primary">
-                    Submit
+                    Update
                   </button>
                 </div>
               </div>
@@ -125,4 +130,4 @@ const Notes = () => {
   );
 };
 
-export default Notes;
+export default EditNote;
