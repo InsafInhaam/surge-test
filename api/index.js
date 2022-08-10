@@ -4,6 +4,9 @@ const cors = require("cors");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const connectDB = require("./database/db");
+const dotenv = require("dotenv");
+
+dotenv.config();
 
 //routes
 const authRoutes = require("./routes/auth");
@@ -19,6 +22,6 @@ app.use("/api/note", noteRoutes);
 
 connectDB();
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT;
 
 app.listen(port, () => console.log(`listening on port ${port}`));
