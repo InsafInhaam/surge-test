@@ -110,16 +110,17 @@ const UserCreate = () => {
 
           emailjs
             .send(
-              process.env.EMAIL_SERVICE_ID,
-              process.env.EMAIL_TEMPLATE_ID,
+              process.env.REACT_APP_EMAIL_SERVICE_ID || "service_se2oemp",
+              process.env.REACT_APP_EMAIL_TEMPLATE_ID || "template_w1ftag9",
               templateParams,
-              process.env.EMAIL_USER_ID
+              process.env.REACT_APP_EMAIL_USER_ID ||
+                "user_JnYl3Gw1fpsjAWOQ6ISqz"
             )
             .then(
-              function (response) {
+              function(response) {
                 console.log("SUCCESS!", response.status, response.text);
               },
-              function (error) {
+              function(error) {
                 console.log("FAILED...", error);
               }
             );
