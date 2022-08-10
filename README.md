@@ -22,7 +22,7 @@ Server side installation
 
 > cd api
 > npm install
-> npm run start-server
+> npm run start-server or node index.js
 
 System explanation
 
