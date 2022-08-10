@@ -110,10 +110,10 @@ const UserCreate = () => {
 
           emailjs
             .send(
-              "service_se2oemp",
-              "template_w1ftag9",
+              process.env.EMAIL_SERVICE_ID,
+              process.env.EMAIL_TEMPLATE_ID,
               templateParams,
-              "user_JnYl3Gw1fpsjAWOQ6ISqz"
+              process.env.EMAIL_USER_ID
             )
             .then(
               function (response) {

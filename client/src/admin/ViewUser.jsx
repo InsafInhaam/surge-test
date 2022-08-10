@@ -52,7 +52,11 @@ const ViewUser = ({ user }) => {
       <td>{user.status}</td>
       {user.accountType === 0 ? <td>User</td> : <td>Admin</td>}
       <td>
-        <a href="#editEmployeeModal" className="edit" data-toggle="modal">
+        <a
+          href={"/Updateuser/" + user._id}
+          className="edit"
+          data-toggle="modal"
+        >
           <i className="material-icons" data-toggle="tooltip" title="Edit">
             <AiIcons.AiTwotoneEdit />
           </i>
@@ -89,7 +93,7 @@ const ViewUser = ({ user }) => {
       {/* view user modal */}
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Modal heading</Modal.Title>
+          <Modal.Title>User</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
